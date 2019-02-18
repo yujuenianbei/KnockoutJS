@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>knockout的用法</title>
+</head>
+
+<body>
+    用户名称：<span id="username" data-bind="text:testjson.username"></span><br />
+    用户密码：<span id="password" data-bind="text:testjson.password"></span><br />
+    邮箱地址：<span id="email" data-bind="text:testjson.email"></span><br />
+    用户住址：<span id="address" data-bind="text:testjson.address"></span><br />
+
+    商品名称：<span id="prodName"></span><br />
+
+    <form data-bind="submit: addItem">
+        New item:
+        <input data-bind='value: itemToAdd, valueUpdate: "afterkeydown"' />
+        <button type="submit" data-bind="enable: itemToAdd().length > 0">Add</button>
+        <p>Your items:</p>
+        <select multiple="multiple" width="50" data-bind="options: items"> </select>
+    </form>
+</body>
+
+</html>
+<script type="text/javascript" src="https://cdn.bootcss.com/knockout/3.5.0-rc2/knockout-debug.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/knockout/3.5.0-rc2/knockout-min.js"></script>
+<script type="text/javascript">
+    document.getElementById("prodName").innerHTML = "护目镜";
+    // //声明的一个javascript模型对象，对应webform中的类对象
+    // var testjson = {
+    //     username: "zhangsan",
+    //     password: "1234567",
+    //     email: "zhangsan@123.com",
+    //     address: "广州天河区"
+    // };
+    // ko.applyBindings(testjson);
+
+    var SimpleListModel = function (items) {
+        this.testjson = {
+        username: "zhangsan",
+        password: "1234567",
+        email: "zhangsan@123.com",
+        address: "广州天河区"
+    };
+        this.items = ko.observableArray(items);
+        this.itemToAdd = ko.observable("");
+        this.addItem = function () {
+            if (this.itemToAdd() != "") {
+                this.items.push(this.itemToAdd()); // Adds the item. Writing to the "items" observableArray causes any associated UI to update. 
+                this.itemToAdd(""); // Clears the text box, because it's bound to the "itemToAdd" observable 
+            } 
+        }.bind(this); // Ensure that "this" is always this view model 
+    };
+
+    ko.applyBindings(new SimpleListModel(["Alpha", "Beta", "Gamma"]));
+</script>
