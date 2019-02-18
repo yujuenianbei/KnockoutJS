@@ -7,7 +7,7 @@
 
 使用ko是图是简单的声明绑定到其他视图模型的html文档。也可使用视图模型的数据生成html模板
 
-## 激活绑定关系
+### 激活绑定关系
 
     js：创建对象
     var myViewModel = { 
@@ -32,7 +32,7 @@ ko.applyBindings的参数
 你可以传递第二个参数是定义要搜索该文档的那一部分data-bind属性。例如，ko.applyBindings(myViewModel, document.getElementById('someElementId'))。这限制激活绑定视图模型的范围在HTML元素的ID元素为someElementId及其子元素，如果你想有多个视图模型的激活绑定或者每个页面的不同区域进行模型绑定的话这种方式是很有用的。
 
 
-## 监控（observable）
+### 监控（observable）
 相当与vue的watch 负责监控属性的变化从而进行视图的变化 observable为特殊的js对象，可将变更通知用户，并能自动检测依赖关系
 
     var myViewModel = { 
@@ -42,7 +42,7 @@ ko.applyBindings的参数
 
 视图模型属性值发生变化时会自动更新UI中的data-bind绑定的属性。同理UI中绑定属性发生变化时也会自动同步到视图模型中
 
-## 读写监控属性
+### 读写监控属性
 
 1. 读取监控属性的当前值，只需调用视图模型属性的无参数方法  
 即：myViewModel.personName()返回'Bob'，myViewModel.personAge()返回123
@@ -57,15 +57,15 @@ KO将可以监控监控属性，当你写data-bind="text: personName"时，text�
 当您更改名称值'Mary'调用myViewModel.personName('Mary')时，text绑定会自动更新相关的DOM元素的文本内容。
 
 
-## 声明监控
+### 声明监控
 使用订阅通知进行变化监控
 
-## 强行监控属性实时通知用户
+### 强行监控属性实时通知用户
 当赋值一个包含原始值（number，string,boolean,null）监控属性，使用内置的notified，以确保一个观测监控属性的用户总能得到通知，即使该值是相同的
 
     myViewModel.personName.extend({ notify: 'always' });
 
-## 延缓或抑制更改通知
+### 延缓或抑制更改通知
 通常情况下，监控属性值改变会立即通知其用户。但是，如果一个监控属性频繁更新会带来高昂的数据传输代价，你可以通过限制或延迟变更通知获得更好的性能。这是通过使用rateLimit增量实现：
 
     // Ensure it notifies about changes no more than once per 50-millisecond period 
@@ -105,7 +105,7 @@ KO将可以监控监控属性，当你写data-bind="text: personName"时，text�
     }; 
     ko.applyBindings(new SimpleListModel(["Alpha", "Beta", "Gamma"]));
 
-## 初始化observArray
+### 初始化observArray
 可通过以下方法进行初始化
 
     // This observable array initially contains three objects 
@@ -115,7 +115,7 @@ KO将可以监控监控属性，当你写data-bind="text: personName"时，text�
         { name: "Zippy", type: "Unknown" } 
     ]);
 
-## 从observableArray读取信息
+### 从observableArray读取信息
 在后台，一个observableArray实际上是一个监控属性，它的值是一个数组。
 KO的observableArray有它自己的功能函数，而且用起来更加的方便：
 
@@ -123,7 +123,7 @@ KO的observableArray有它自己的功能函数，而且用起来更加的方便
 2. 对于修改数组的内容，如函数push和splice，可以让所有注册的侦听器通知更改，你的用户界面会自动更新KO的依赖跟踪机制所定义的对象。
 3. 语法是更方便。要调用KO的push方式，只需要写myObservableArray.push(...)。这比调用底层Javascript写方法myObservableArray().push(...)更加方便
 
-## observableArray数组操作
+### observableArray数组操作
 1. 索引indexOf  
 返回等于参数第一个数组元素的索引,比如myObservableArray.indexOf('Blah')将返回第一个数组条目等于从零开始的索引Blah，若没有则返回-1
 
@@ -159,8 +159,123 @@ destroyAll()-对数组中所有对象的特殊的属性_destroy赋值true。
 
 请注意，当KO呈现一个foreach具有约束性，它会自动隐藏标记用任何元素的_destroy。所以，你可以有某种"删除"按钮调用该destroy(someItem)方法在数组上，这将立即引起指定的项目，从UI消失。后来，当您提交Rails的JSON对象，该项目也将被从数据库中删除。
 
-## 延缓和/或抑制更改通知
+### 延缓和/或抑制更改通知
 和对象的基本一致
 
     // Ensure it notifies about changes no more than once per 50-millisecond period 
     myViewModel.myObservableArray.extend({ rateLimit: 50 });
+
+
+## 计算控制属性
+如果有一个监控属性firstName和另一个lastName，要显示全名的话可以使用计算监控属性来实现。它依赖于一个或多个其他监控属性，每当这些依赖关系的监控属性改变时。将会自动更新计算监控属性。
+
+    function AppViewModel() {
+        this.firstName = ko.observable('Bob');
+        this.lastName = ko.observable('Smith');
+        this.fullName = ko.computed(function() {
+            return this.firstName() + " " + this.lastName();
+        }, this);
+    }
+
+    然后将计算监控属性绑定到UI上
+    The name is <span data-bind="text: fullName"></span>
+
+    此处的fullname会根据firstname和lastname的改变而改变
+
+### 管理 this 关键字
+ko.computed通过定义的this调用视图模型中的其他监控属性
+
+其中一种流行的方式是，将this关键字赋值给一个JS变量，比如var self，然后使用self调用整个视图模型的监控属性
+    
+    function AppViewModel() {
+        var self = this;
+        self.firstName = ko.observable('Bob');
+        self.lastName = ko.observable('Smith');
+        self.fullName = ko.computed(function() {
+            return self.firstName() + " " + self.lastName();
+        });
+    }
+
+### 升级版计算监控属性
+3.X中新增了pureComputed方法，是在Computed方法的基础上改良而来的。主要作用的是防止内存泄露，其次是减少没有必要的内存开销
+
+    this.fullName = ko.pureComputed(function() {
+        return this.firstName() + " " + this.lastName();
+    }, this);
+
+### 强制计算监控属性实时通知用户
+当赋值一个包含原始值(number,string,bollean,null)监控属性，使用内置的notified，以确保一个观测属性的用户总是得到通知，即使该值是相同的
+
+    myViewModel.fullName = ko.pureComputed(function() {
+        return myViewModel.firstName() + " " + myViewModel.lastName();
+    }).extend({ notify: 'always' });
+
+### 延缓或抑制更改通知
+
+    // Ensure updates no more than once per 50-millisecond period
+    myViewModel.fullName.extend({ rateLimit: 50 });
+
+### 排除计算监控属性
+
+排除一些计算监控属性，防止其送回服务器。可以使用js方法确定哪些属性是计算监控属性，然而KO提供了一个实用函数ko.isComputed以帮助判断哪些是计算监控属性
+
+    for (var prop in myObject) {
+        if (myObject.hasOwnProperty(prop) && !ko.isComputed(myObject[prop])) {
+            result[prop] = myObject[prop];
+        }
+    }
+
+除此之外，KO还提供了一些其他很有用的函数：
+1. ko.isObservable : 对于所有的observable,observable array,computed observable将返回true；
+2. ko.isWritableObservable : 对于所有的observable,observable array,writable computed observable返回true；
+
+### 当计算监控属性只用于UI展示
+如果值需要在界面中使用计算监控属性 可以声明：
+
+    function AppViewModel() {
+        // ... leave firstName and lastName unchanged ...
+    
+        this.fullName = function() {
+            return this.firstName() + " " + this.lastName();
+        };
+    }
+
+    调用：
+    The name is <span data-bind="text: fullName()"></span>
+
+
+
+## 可赋值的计算监控属性
+一般情况下使用不到这部分内容  
+通常，计算监控属性一般是只读的。可以通过使用自己的回调函数让计算监控属性变为可赋值状态  
+可以使用自己定制的逻辑让计算监控属性可写。就像将空属性，可以使用一个模型对象的链接的语法进行赋值，比如myViewModel.fullName('john').age(50)
+
+详细请参考html页面
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://www.cnblogs.com/smallprogram/p/5927561.html
+
+
+Tit@^ic!997
+Wang!@#723!@#andong
+
+https://github.com/FelisCatus/SwitchyOmega/releases/download/v2.5.20/SwitchyOmega_Chromium.crx
+socket5 192.168.1.101 7070
+
+git 
+https://shinetechsoftware.coding.net/p/dockerdemo/git
+
+wangad@shinetechchina.com
+wang723andong
