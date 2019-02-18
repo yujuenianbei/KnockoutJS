@@ -164,3 +164,94 @@ destroyAll()-对数组中所有对象的特殊的属性_destroy赋值true。
 
     // Ensure it notifies about changes no more than once per 50-millisecond period 
     myViewModel.myObservableArray.extend({ rateLimit: 50 });
+
+
+## 计算控制属性
+如果有一个监控属性firstName和另一个lastName，要显示全名的话可以使用计算监控属性来实现。它依赖于一个或多个其他监控属性，每当这些依赖关系的监控属性改变时。将会自动更新计算监控属性。
+
+    function AppViewModel() {
+        this.firstName = ko.observable('Bob');
+        this.lastName = ko.observable('Smith');
+        this.fullName = ko.computed(function() {
+            return this.firstName() + " " + this.lastName();
+        }, this);
+    }
+
+    然后将计算监控属性绑定到UI上
+    The name is <span data-bind="text: fullName"></span>
+
+    此处的fullname会根据firstname和lastname的改变而改变
+
+## 管理 this 关键字
+ko.computed通过定义的this调用视图模型中的其他监控属性
+
+其中一种流行的方式是，将this关键字赋值给一个JS变量，比如var self，然后使用self调用整个视图模型的监控属性
+    
+    function AppViewModel() {
+        var self = this;
+        self.firstName = ko.observable('Bob');
+        self.lastName = ko.observable('Smith');
+        self.fullName = ko.computed(function() {
+            return self.firstName() + " " + self.lastName();
+        });
+    }
+
+## 升级版计算监控属性
+3.X中新增了pureComputed方法，是在Computed方法的基础上改良而来的。主要作用的是防止内存泄露，其次是减少没有必要的内存开销
+
+    this.fullName = ko.pureComputed(function() {
+        return this.firstName() + " " + this.lastName();
+    }, this);
+
+## 强制计算监控属性实时通知用户
+当赋值一个包含原始值(number,string,bollean,null)监控属性，使用内置的notified，以确保一个观测属性的用户总是得到通知，即使该值是相同的
+
+    myViewModel.fullName = ko.pureComputed(function() {
+        return myViewModel.firstName() + " " + myViewModel.lastName();
+    }).extend({ notify: 'always' });
+
+## 延缓或抑制更改通知
+
+    // Ensure updates no more than once per 50-millisecond period
+    myViewModel.fullName.extend({ rateLimit: 50 });
+
+## 排除计算监控属性
+
+排除一些计算监控属性，防止其送回服务器。可以使用js方法确定哪些属性是计算监控属性，然而KO提供了一个实用函数ko.isComputed以帮助判断哪些是计算监控属性
+
+    for (var prop in myObject) {
+        if (myObject.hasOwnProperty(prop) && !ko.isComputed(myObject[prop])) {
+            result[prop] = myObject[prop];
+        }
+    }
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Tit@^ic!997
+Wang!@#723!@#andong
+
+https://github.com/FelisCatus/SwitchyOmega/releases/download/v2.5.20/SwitchyOmega_Chromium.crx
+socket5 192.168.1.101 7070
+
+git 
+https://shinetechsoftware.coding.net/p/dockerdemo/git
+
+wangad@shinetechchina.com
+wang723andong
