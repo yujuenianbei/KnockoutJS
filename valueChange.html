@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>knockout的用法</title>
+</head>
+
+<body>
+    <div>Enter bid price: <input data-bind="textInput: formattedPrice" /></div>
+    <div>(Raw value: <span data-bind="text: price"></span>)</div>
+</body>
+
+</html>
+<script type="text/javascript" src="https://cdn.bootcss.com/knockout/3.5.0-rc2/knockout-debug.js"></script>
+<script type="text/javascript" src="https://cdn.bootcss.com/knockout/3.5.0-rc2/knockout-min.js"></script>
+<script type="text/javascript">
+    function MyViewModel() {
+        this.price = ko.observable(25.99);
+
+        this.formattedPrice = ko.pureComputed({
+            read: function () {
+                return '$' + this.price().toFixed(2);
+            },
+            write: function (value) {
+                // Strip out unwanted characters, parse as float, then write the 
+                // raw data back to the underlying "price" observable
+                value = parseFloat(value.replace(/[^\.\d]/g, ""));
+                this.price(isNaN(value) ? 0 : value); // Write to underlying storage
+            },
+            owner: this
+        });
+    }
+
+    ko.applyBindings(new MyViewModel());
+</script>
