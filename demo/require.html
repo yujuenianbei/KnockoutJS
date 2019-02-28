@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>knockout的用法</title>
+    <script src="https://cdn.bootcss.com/require.js/2.3.6/require.min.js"></script>
+    <script type="text/javascript">
+        require(['a'])
+    </script>
+</head>
+
+<body>
+    <div>Enter a numeric value: <input data-bind="textInput: attemptedValue" /></div>
+    <div class="error" data-bind="visible: !lastInputWasValid()">That's not a number!</div>
+    <div>(Accepted value: <span data-bind="text: acceptedNumericValue"></span>)</div>
+</body>
+</html>
