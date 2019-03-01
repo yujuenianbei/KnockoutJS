@@ -27,6 +27,23 @@
         <p>Your items:</p> 
         <select multiple="multiple" width="50" data-bind="options: items"> </select> 
     </form>
+    <h3>Pure Computed Observables</h3>
+    <div id="sample4" class="log" data-bind="text: computedLog">
+        <!-- ko if: step() == 0 -->
+        <p>First Name: <input type="text" data-bind="textInput: firstName"></p>
+        <!-- /ko -->
+        <!-- ko if: step() == 1 -->
+        <p>Last Name: <input type="text" data-bind="textInput: lastName"></p>
+        <!-- /ko -->
+        <!-- ko if: step() == 2 -->
+        <div>Prefix:
+          <select data-bind="value: prefix,options:['Mr.','Ms.','Mrs.','Dr.']">
+          </select>
+          <h2>Hello, <span data-bind="text: fullName"> </span>!</h2>
+        </div>
+        <!-- /ko -->
+        <P><button type="button" data-bind="click: next">Next</button></P>
+      </div>
 </body>
 
 </html>

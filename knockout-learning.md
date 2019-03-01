@@ -250,7 +250,58 @@ ko.computed通过定义的this调用视图模型中的其他监控属性
 通常，计算监控属性一般是只读的。可以通过使用自己的回调函数让计算监控属性变为可赋值状态  
 可以使用自己定制的逻辑让计算监控属性可写。就像将空属性，可以使用一个模型对象的链接的语法进行赋值，比如myViewModel.fullName('john').age(50)
 
-详细请参考html页面
+详细请参考html页面<a href="https://www.cnblogs.com/smallprogram/p/5923235.html">可赋值的计算监控属性</a>
+
+
+## ko实现依赖追踪
+
+ko自动更新原理：  
+1. 声明一个计算监控属性时，ko立即调用其相关的函数来获取其初始值
+2. 当相关函数正在运行，ko将建立一个订阅到相关监控属性（包括其他计算监控属性）并读取他们的值。订阅回调函数设置为订阅函数再次运行，循环这个过程
+3. 当有新的值，ko会通知你的计算监控属性将值反馈给用户
+
+采用peek控制依赖
+peek方法会在不需要创建依赖的情况下控制一个监控属性或者依赖属性
+
+在下面的例子中，依赖属性通过Ajax方法和其他两个监控属性参数来重新加载一个名为currentPageData的监控属性。当pageIndex发生变化时，依赖属性会被更新，但会忽略掉selectedItem的变化，因为它是通过peek方法控制。在这种情况下，用户可能希望仅仅在数据被加载时才使用selectedItem的当前值用于追踪。
+
+    ko.computed(function() {
+        var params = {
+            page: this.pageIndex(),
+            selected: this.selectedItem.peek()
+        };
+        $.getJSON('/Some/Json/Service', params, this.currentPageData);
+    }, this);
+
+如果想阻止监控属性则可以参考延缓或抑制更改通知
+
+## pure computed observables
+在PureComputed函数中，随着相关监控属性值发生变化的时候，在两种状态之间切换。
+1. 每当它没有值变化的时候，它处于睡眠状态。当进入睡眠状态时，其配置的所有订阅它的依赖。在这种状态下，它不会订阅任何监控属性。如果它被读取，返回的也是睡眠状态的值
+2. 每当它的值变化的时候，它处于监听状态。每当进入监听状态，他会立即订阅所有依赖。在这种状态下，它的运作就像一个普通的计算监控属性。
+
+语法：  
+pure computed observables:  
+
+    this.fullname = ko.pureComputed(function() {
+        return this.firstName() + "" + this.lastName();
+    },this);
+原始的Computed observables 加上pure参数后的等同写法：  
+
+    this.fullName = ko.computed(function(){
+        return this.firstName() + "" + this.lastName();
+    },this,{pure: true})
+
+确定一个属性是不是Pure Computed observables  
+KO提供了ko.isPureComputed函数，帮助确定监控属性是不是Pure computed observables。  
+
+    var result = {};
+    ko.utils.objectForEach(myObject, function (name, value) {
+        if (!ko.isComputed(value) || ko.isPureComputed(value)) {
+            result[name] = value;
+        }
+    });
+
 
 
 
