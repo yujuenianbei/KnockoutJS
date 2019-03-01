@@ -365,4 +365,55 @@ $parent 所代表的是在foreach绑定循环外的某个绑定属性
 ## if绑定
 if绑定一般是格式是data-bind=if:attribute,if后所跟属性或表达式的值应为bool值(也可以是非bool值，当非空字符串时则为真)，if绑定的作用与visible绑定的作用类似。可控制DOM的显示与隐藏，不一样的地方是，if绑定是物理删除或添加DOM元素。
 
+例１：　展示IF绑定的动态删除添加DOM  
 
+    <label>
+        <input type="checkbox" data-bind="checked: displayMessage" />Display Message
+    </label>
+
+    <div data-bind="if: displayMessage">Here is a message</div>
+
+    <script>
+    ko.applyBindings({
+        displayMessage: ko.observable(false)
+    })
+    </script>
+
+例２：　　通过foreach绑定循环planets监控属性数组，其中name为Mercury的项目中capital为null，则循环中该项目只显示其name.
+
+    <ul data-bind="foreach: planets">
+        <li>
+            Planet: <b data-bind="text: name"></b>
+            <div data-bind="if: capital">
+                Capital: <b data-bind="test: capital.cityName"></b>
+            </div>
+        </li>
+    </ul>
+
+    <script>
+        ko.applyBindings({
+            planets:[
+                {name: 'Mercury', capital: null},
+                {name: 'Earth', capital: { cityName: 'Barnsley'}}
+            ]
+        })
+    </script>
+
+##### 注使用无容器的if绑定（if虚拟绑定）
+像之前的虚拟绑定一样，同样使用<!-- ko -->和<!-- /ko -->进行。虚拟绑定适用于不改变UI元素的情况。
+
+    <ul>
+        <li>This item always appears</li>
+        <!-- ko if: someExpressionGoesHere -->
+            <li>I want to make this item present/absent dynamically</li>
+        <!-- /ko -->
+    </ul>
+
+### ifnot绑定
+ifnot绑定是if绑定的逆向表达，格式与if绑定一样，只是判断结果与if整好相反。就像等于和不等于一样。例如：
+
+    <div data-bind="ifnot: someProperty">...</div>
+其等效写法为：
+
+    <div data-bind="if: !someProperty()">...</div>
+有人会说使用if绑定是足够了。为毛还要ifnot绑定。原因是有很多强迫症患者喜欢这种ifnot的绑定方式，看起来更易懂，代码更整洁。

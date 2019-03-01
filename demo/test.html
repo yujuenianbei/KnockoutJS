@@ -1,58 +1,277 @@
-<!doctype html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <title>knockout的用法</title>
-</head>
-
-<body>
-    用户名称：<span id="username" data-bind="text:testjson.username"></span><br />
-    用户密码：<span id="password" data-bind="text:testjson.password"></span><br />
-    邮箱地址：<span id="email" data-bind="text:testjson.email"></span><br />
-    用户住址：<span id="address" data-bind="text:testjson.address"></span><br />
-
-    商品名称：<span id="prodName"></span><br />
-
-    <form data-bind="submit: addItem">
-        New item:
-        <input data-bind='value: itemToAdd, valueUpdate: "afterkeydown"' />
-        <button type="submit" data-bind="enable: itemToAdd().length > 0">Add</button>
-        <p>Your items:</p>
-        <select multiple="multiple" width="50" data-bind="options: items"> </select>
-    </form>
-</body>
-
-</html>
-<script type="text/javascript" src="https://cdn.bootcss.com/knockout/3.5.0-rc2/knockout-debug.js"></script>
-<script type="text/javascript" src="https://cdn.bootcss.com/knockout/3.5.0-rc2/knockout-min.js"></script>
-<script type="text/javascript">
-    document.getElementById("prodName").innerHTML = "护目镜";
-    // //声明的一个javascript模型对象，对应webform中的类对象
-    // var testjson = {
-    //     username: "zhangsan",
-    //     password: "1234567",
-    //     email: "zhangsan@123.com",
-    //     address: "广州天河区"
-    // };
-    // ko.applyBindings(testjson);
-
-    var SimpleListModel = function (items) {
-        this.testjson = {
-        username: "zhangsan",
-        password: "1234567",
-        email: "zhangsan@123.com",
-        address: "广州天河区"
-    };
-        this.items = ko.observableArray(items);
-        this.itemToAdd = ko.observable("");
-        this.addItem = function () {
-            if (this.itemToAdd() != "") {
-                this.items.push(this.itemToAdd()); // Adds the item. Writing to the "items" observableArray causes any associated UI to update. 
-                this.itemToAdd(""); // Clears the text box, because it's bound to the "itemToAdd" observable 
-            } 
-        }.bind(this); // Ensure that "this" is always this view model 
-    };
-
-    ko.applyBindings(new SimpleListModel(["Alpha", "Beta", "Gamma"]));
-</script>
+<!--right contactus-->
+<style xml="space"><!--
+    #YSF-BTN-HOLDER{
+        display: none!important;
+    }
+    @-ms-viewport{
+        width: auto !important;
+    }
+--></style>
+<style xml="space"><!--
+.pc-contact-us-new ul,
+.pc-contact-us-new li {
+    list-style: none;
+}
+.pc-contact-us-new * {
+    margin: 0;
+    padding: 0;
+}
+.pc-contact-us-new {
+    top:33%;
+    display: block !important;
+    position: fixed;
+    z-index: 9999;
+    right: 0;
+    color: #FFFFFF;
+    box-sizing: border-box;
+    line-height: 1.5;
+    font-size: 62.5%;
+}
+.pc-contact-us-new a {
+    text-decoration: none;
+}
+.pc-contact-us-new p {
+    text-align: center;
+    font-size: 12px;
+    padding-bottom: 3px;
+    margin: 0;
+}
+.pc-contact-us-new .one-rows{
+    border-bottom: 1px dashed #FFFFFF;
+    background-color: #0197d6;
+    position: relative;
+}
+.pc-contact-us-new .one-rows > p {
+    width: 48px;
+}
+.pc-contact-us-new .icon_top{
+    background: url('https://media.hpstore.cn/wysiwyg/banner/right002.png') no-repeat;
+    width:35px;
+    height:30px;
+    margin-top: 0;
+    margin-left: 5px;
+    display: inline-block;
+    zoom: 1;
+    overflow: hidden;
+}
+.pc-contact-us-new .icon_hotline{
+    background-position:-6px -11px;
+}
+.pc-contact-us-new .icon_qq{
+    background-position:-6px -79px;
+    height: 32px;
+}
+.pc-contact-us-new .icon_wx{
+    background-position:-6px -149px;
+}
+.pc-contact-us-new .icon_pencil{
+    background-position:-6px -218px;
+}
+.pc-contact-us-new .icon_totop{
+    transform: none;
+    background-position:-6px -280px;
+    height: 15px;
+}
+.pc-contact-us-new .right_show{
+    right: 48px;
+    position: absolute;
+    top: 0;
+    color: #444444;
+    text-align: center;
+    font-size: 12px;
+    border: 1px solid #0197d6;
+    background-color: #FFFFFF;
+    display: none;
+}
+.pc-contact-us-new .right_show p {
+    font-size: 12px;
+    padding-bottom: 0;
+    text-align: center;
+}
+.pc-contact-us-new .right_show li{
+    border-bottom: 1px solid #0197d6;
+    padding: 5px 0 8px;
+}
+.rightbar_show_hotline2{
+    border: 1px solid #0197d6;
+}
+.rightbar_show_hotline2 ul{
+    display: block;
+    float: left;
+    width:auto;
+    border: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.pc-contact-us-new .rightbar_show_hotline {
+    width: 125px;
+    border-bottom: none;
+    padding: 0;
+}
+.pc-contact-us-new .rightbar_show_hotline2 li{
+    border: none;
+    border-bottom: 1px solid #0197d6;
+}
+.pc-contact-us-new .rightbar_show_hotline2{
+    border-bottom: 1px solid #0197d6;
+}
+.pc-contact-us-new .rightbar_show_wx p:nth-of-type(1){
+    width: auto;
+    height: auto;
+    background: none;
+    background-position: inherit;
+}
+.pc-contact-us-new .icon_ask{
+    background: url('https://media.hpstore.cn/wysiwyg/banner/icon-ask-33.png') no-repeat;
+    width: 35px;
+    height: 30px;
+    margin-top: 5px;
+    margin-left: 8px;
+    background-size: 32px 32px;
+}
+.pc-contact-us-new .rightbar_show_qq{
+    height: auto;
+    padding: 0px;
+    width: 125px;
+}
+.pc-contact-us-new .scrollTop {
+    cursor: pointer;
+    bottom: 50px;
+    display: none;
+    background-color: #AAAAAB;
+    color: #666;
+}
+@media only screen and (max-width: 768px) {
+    .pc-contact-us-new .one-rows {
+        display: none;
+    }
+    .pc-contact-us-new .scrollTop {
+        background-color: #c8c8c8;
+        opacity: 0.8;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+        position: fixed;
+        right: 5px;
+    }
+    .pc-contact-us-new .icon_totop {
+        background-position: -10px -271px;
+        height: 30px;
+    }
+}
+--></style>
+<div class="pc-contact-us-new">
+<div class="one-rows"><i class="icon_top icon_hotline">?</i>
+<p>¹ºÂò×ÉÑ¯</p>
+<div class="right_show rightbar_show_hotline">
+<ul>
+<li style="padding: 6px 0px;">
+<p>¹ºÂò×ÉÑ¯<br />(9:00-18:00)</p>
+</li>
+<li>
+<p>ŒÒÓÃ²úÆ·¶©¹ºÈÈÏß</p>
+<p><a href="tel:400-820-1015">400-820-1015-3</a></p>
+</li>
+<li>
+<p>ÉÌÓÃ²úÆ·¶©¹ºÈÈÏß</p>
+<p>œö¹€×÷ÈÕÌá¹©Ö§³Ö</p>
+<p><a href="tel:400-820-0702">400-820-0702</a></p>
+</li>
+<li>
+<p>ŽòÓ¡»úŒ°ºÄ²ÄÈÈÏß</p>
+<p>œö¹€×÷ÈÕÌá¹©Ö§³Ö</p>
+<p><a href="tel:400-820-1701">400-820-1701</a></p>
+</li>
+<li>
+<p>¶©µ¥Ïà¹Ø×ÉÑ¯ÈÈÏß</p>
+<p><a href="tel:400-820-1015-1">400-820-1015-1</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="one-rows"><i class="icon_top icon_ask">?</i>
+<p>ÔÚÏß×ÉÑ¯</p>
+<div class="right_show rightbar_show_qq">
+<ul>
+<li id="openChatButton" hidden="">
+<p>¹Ù·œÊÛÇ°ÔÚÏß×ÉÑ¯<br />(9:00-20:00)</p>
+<p><a style="background: #0197d6; color: #fff; padding: 2px 9px; border-radius: 2px;" href="javascript:void(0);"><span>Á¢ŒŽ×ÉÑ¯</span></a></p>
+</li>
+<li style="border-bottom: none;">
+<p>¹Ù·œÊÛÇ°QQ×ÉÑ¯<br />(9:00-20:00)</p>
+<p><a style="background: #0197d6; color: #fff; padding: 2px 9px; border-radius: 2px;" href="http://crm2.qq.com/page/portalpage/wpa.php?uin=800091199&amp;aty=0&amp;a=0&amp;curl=&amp;ty=1" target="_blank"><span>Á¢ŒŽ×ÉÑ¯</span></a></p>
+</li>
+</ul>
+</div>
+</div>
+<div class="one-rows" style="border-bottom: none;"><i class="icon_top icon_wx">?</i>
+<p>ÊÛºó×ÉÑ¯</p>
+<div class="right_show rightbar_show_hotline rightbar_show_hotline2" style="top: -116px; width: 211px;">
+<ul>
+<li style="padding: 5px;">
+<p>ŒÒÓÃ²úÆ·ÊÛºóÈÈÏß</p>
+<p><a href="tel:400-885-6616">400-885-6616</a></p>
+</li>
+<li style="padding: 5px;">
+<p>ÉÌÓÃ²úÆ·ÊÛºóÈÈÏß</p>
+<p><a href="tel:400-610-3888">400-610-3888</a></p>
+</li>
+<li style="border-bottom: none; padding: 5px;">
+<p>ŽòÓ¡»úÊÛºóÈÈÏß</p>
+<p><a href="tel:400-885-6616-2">400-885-6616-2</a></p>
+<p><a href="tel:400-610-3888-4">400-610-3888-4</a></p>
+</li>
+</ul>
+<ul style="border-left: 1px solid #0197d6;">
+<li style="background-color: #0197d6; border-bottom: none;">
+<p><a style="color: #fff;" href="http://alwayson.hpicss.com/support/ascindex_detail.aspx" target="_blank">·þÎñÖÐÐÄ²éÑ¯</a></p>
+</li>
+<li class="rightbar_show_wx" style="border-bottom: none;">
+<p><img src="https://media.hpstore.cn/wysiwyg/banner/hpserver2.png" alt="" /></p>
+<p>»ÝÆÕ·þÎñÎ¢ÐÅ</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="one-rows" style="display: none; border-bottom: none;"><a style="color: #ffffff;" href="https://www.hpstore.cn/survey" target="_blank"> <i class="icon_top icon_pencil">?</i></a>
+<p><a style="color: #ffffff;" href="https://www.hpstore.cn/survey" target="_blank">ÒâŒû·ŽÀ¡</a></p>
+</div>
+<div class="scrollTop"><i class="icon_top icon_totop">?</i></div>
+</div>
+<script type="text/javascript" xml="space">// <![CDATA[
+    require([
+        'jquery'
+    ], function ($) {
+        $(window).scroll(function () {
+            var objetsTop = document.body.scrollTop;
+            if ($(window).scrollTop() > 100) {
+                $('.scrollTop').fadeIn(1500);
+            } else {
+                $('.scrollTop').fadeOut(1500);
+            }
+        });
+        $('.scrollTop').click(function () {
+            $('body,html').animate({
+                    scrollTop: 0
+                },
+                1000);
+            return false;
+        });
+        //new right bar
+        $(".pc-contact-us-new .one-rows").hover(function () {
+            if ($(this).find('.right_show').hasClass('rightbar_show_qq')) {
+                if ($('#inside_liveChatTab').length < 1) {
+                    $('#openChatButton').hide();
+                } else {
+                    $('#openChatButton').show();
+                }
+            }
+            $(this).find('.right_show').show();
+        }, function () {
+            var _this = $(this);
+            _this.find('.right_show').hide();
+        });
+    });
+// ]]></script>
