@@ -1,79 +1,142 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/css/style.css' />
-    <script data-main="/js/app" src="/js/lib/require.min.js"></script>
-  </head>
-  <body>
-    <h3>require使用方法</h3>
-    <div id="app">
-        {{message}}
+
+<head>
+  <title><%= title %></title>
+  <link rel='stylesheet' href='/css/style.css' />
+  <script data-main="/js/app" src="/js/lib/require.min.js"></script>
+</head>
+
+<body>
+  <h3>require使用方法</h3>
+  <div id="app">
+    {{message}}
+  </div>
+  <h3>激活绑定关系</h3>
+  <div id='sample1'>the name is <span data-bind="text: person"></span></div>
+  <h3>监控（observable）</h3>
+  <div id='sample2'>
+    the name is <span data-bind="text: name"></span><br />
+    the age is <span data-bind="text: age"></span>
+  </div>
+  <h3>监控属性数组　observableArray(监控属性数组)</h3>
+  <form data-bind="submit: addItem" id="sapmle3">
+    New item:
+    <input data-bind='value: itemToAdd, valueUpdate: "afterkeydown"' />
+    <button type="submit" data-bind="enable: itemToAdd().length > 0">Add</button>
+    <p>Your items:</p>
+    <select multiple="multiple" width="50" data-bind="options: items"> </select>
+  </form>
+  <h3>Pure Computed Observables</h3>
+  <div id="sample4" class="log" data-bind="text: computedLog">
+    <!-- ko if: step() == 0 -->
+    <p>First Name: <input type="text" data-bind="textInput: firstName"></p>
+    <!-- /ko -->
+    <!-- ko if: step() == 1 -->
+    <p>Last Name: <input type="text" data-bind="textInput: lastName"></p>
+    <!-- /ko -->
+    <!-- ko if: step() == 2 -->
+    <div>Prefix:
+      <select data-bind="value: prefix,options:['Mr.','Ms.','Mrs.','Dr.']">
+      </select>
+      <h2>Hello, <span data-bind="text: fullName"> </span>!</h2>
     </div>
-    <h3>激活绑定关系</h3>
-    <div id='sample1'>the name is <span data-bind="text: person"></span></div>
-    <h3>监控（observable）</h3>
-    <div id='sample2'>
-        the name is <span data-bind="text: name"></span><br/>
-        the age is <span data-bind="text: age"></span>
-    </div>
-    <h3>监控属性数组　observableArray(监控属性数组)</h3>
-    <form data-bind="submit: addItem" id="sapmle3"> 
-        New item: 
-        <input data-bind='value: itemToAdd, valueUpdate: "afterkeydown"' /> 
-        <button type="submit" data-bind="enable: itemToAdd().length > 0">Add</button> 
-        <p>Your items:</p> 
-        <select multiple="multiple" width="50" data-bind="options: items"> </select> 
-    </form>
-    <h3>Pure Computed Observables</h3>
-    <div id="sample4" class="log" data-bind="text: computedLog">
-      <!-- ko if: step() == 0 -->
-      <p>First Name: <input type="text" data-bind="textInput: firstName"></p>
-      <!-- /ko -->
-      <!-- ko if: step() == 1 -->
-      <p>Last Name: <input type="text" data-bind="textInput: lastName"></p>
-      <!-- /ko -->
-      <!-- ko if: step() == 2 -->
-      <div>Prefix:
-        <select data-bind="value: prefix,options:['Mr.','Ms.','Mrs.','Dr.']">
-        </select>
-        <h2>Hello, <span data-bind="text: fullName"> </span>!</h2>
-      </div>
-      <!-- /ko -->
-      <P><button type="button" data-bind="click: next">Next</button></P>
-    </div>
-    <h3>data bind</h3>
-    <div id='sample5'>
-      <a data-bind="attr: { href: url, title: details }">
-        Report
+    <!-- /ko -->
+    <P><button type="button" data-bind="click: next">Next</button></P>
+  </div>
+  <h3>data bind</h3>
+  <div id='sample5'>
+    <a data-bind="attr: { href: url, title: details }">
+      Report
     </a>
-    </div>
-<!-- sample6 -->
-    <h3>遍历监控属性数组</h3>
-    <div id="sample6">
-      <table>
-        <thead>
-            <tr><th>First name</th><th>Last name</th></tr>
-        </thead>
-        <tbody data-bind="foreach: people">
-            <tr>
-                <td data-bind="text: firstName"></td>
-                <td data-bind="text: lastName"></td>
-            </tr>
-        </tbody>
+  </div>
+  <!-- sample6 -->
+  <h3>遍历监控属性数组</h3>
+  <div id="sample6">
+    <table>
+      <thead>
+        <tr>
+          <th>First name</th>
+          <th>Last name</th>
+        </tr>
+      </thead>
+      <tbody data-bind="foreach: people">
+        <tr>
+          <td data-bind="text: firstName"></td>
+          <td data-bind="text: lastName"></td>
+        </tr>
+      </tbody>
     </table>
+  </div>
+  <!-- sample7 -->
+  <h3>添加、删除项目</h3>
+  <div id="sample7">
+    <ul data-bind="foreach: persons">
+      <li>
+        Name at position<span data-bind="text: $index"></span>
+        <span data-bind="text: name"></span>
+        <a href="#" data-bind="click: $parent.removePerson">remove</a>
+      </li>
+    </ul>
+    <button data-bind="click: addPerson">add</button>
+  </div>
+  <!-- sample19 with1-->
+  <h3>with绑定</h3>
+  <div id="sample19">
+    <h4 data-bind="text: city"></h4>
+    <p data-bind="with: coords">
+      Latitude: <span data-bind="text: latitude"> </span>,
+      Longitude: <span data-bind="text: longitude"> </span>
+    </p>
+  </div>
+  <!-- sample20 with2-->
+  <h3>with绑定(互动)</h3>
+  <div id="sample20">
+    <form data-bind="submit: getTweets">
+      Twitter account:
+      <input type="text" data-bind="value: twitterName">
+      <button type="submit">Get Tweets</button>
+    </form>
+    <div data-bind="with: resultData">
+      <h3>Recent tweets fetched at <span data-bind="text: retrievalDate"></span></h3>
+      <ol data-bind="foreach: topTweets">
+        <li data-bind="text: text"></li>
+      </ol>
+      <!-- 如果写在外面则不需要加parent　同时cleanResults的this指向也会变化 -->
+      <button data-bind="click: $parent.cleanResults">clean Tweets</button>
     </div>
-<!-- sample7 -->
-    <h3>添加、删除项目</h3>
-    <div id="sample7">
-      <ul data-bind="foreach: persons">
-        <li>
-          Name at position<span data-bind="text: $index"></span>
-          <span data-bind="text: name"></span>
-          <a href="#" data-bind="click: $parent.removePerson">remove</a>
-        </li>
-      </ul>
-      <button data-bind="click: addPerson">add</button>
-    </div>
-  </body>
+  </div>
+  <!-- sample21 component -->
+  <h3>component 1</h3>
+  <div id="sample21">
+    <h4>First instance, without parameters</h4>
+    <div data-bind='component: "message-editor"'></div>
+
+    <h4>Second instance, passing parameters</h4>
+    <div data-bind='component: {
+          name: "message-editor",
+          params: { initialText: "Hello, world!" }
+      }'></div>
+  </div>
+
+  <!-- sample22 click1-->
+  <h3>click 1</h3>
+  <div id="sample22">
+      you have clicked <span data-bind="text: numberOfClicks"></span> Times
+      <button data-bind="click: incrementClickCounter">click me</button>
+  </div>
+
+  <!-- sample23 -->
+  <h3>click param(s)</h3>
+  <div id="sample23">
+      <button data-bind="click: myFunction">
+          Click me
+      </button>
+
+      <button data-bind="click: function(data, event) { myFunction('param1', 'param2', data, event) }">
+          Click me
+      </button>
+  </div>
+</body>
+
 </html>

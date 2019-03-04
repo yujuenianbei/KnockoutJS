@@ -417,3 +417,235 @@ ifnot绑定是if绑定的逆向表达，格式与if绑定一样，只是判断�
 
     <div data-bind="if: !someProperty()">...</div>
 有人会说使用if绑定是足够了。为毛还要ifnot绑定。原因是有很多强迫症患者喜欢这种ifnot的绑定方式，看起来更易懂，代码更整洁。
+
+### with绑定
+目的:  
+格式:  data-bind="with:attribute", 使用with绑定会将其后跟的属性看做一个新的上下文进行绑定。with绑定内部的所有元素将受到该上下文的约束。with可以和if/foreach绑定一起使用
+
+例子： 
+
+    <h1 data-bind="text: city"> </h1>
+    <p data-bind="with: coords">
+        Latitude: <span data-bind="text: latitude"> </span>,
+        Longitude: <span data-bind="text: longitude"> </span>
+    </p>
+
+    <script type="text/javascript">
+        ko.applyBindings({
+            city: "London",
+            coords: {
+                latitude:  51.5001524,
+                longitude: -0.1262362
+            }
+        });
+    </script>
+本例中，通过with直接绑定了coords监控属性，并在其内部直接调用了coords监控属性的内部属性。这里就体现了with绑定的特性。
+
+
+    <form data-bind="submit: getTweets">
+        Twitter account:
+        <input data-bind="value: twitterName" />
+        <button type="submit">Get tweets</button>
+    </form>
+    
+    <div data-bind="with: resultData">
+        <h3>Recent tweets fetched at <span data-bind="text: retrievalDate"> </span></h3>
+        <ol data-bind="foreach: topTweets">
+            <li data-bind="text: text"></li>
+        </ol>
+    
+        <button data-bind="click: $parent.clearResults">Clear tweets</button>
+    </div>
+
+    <script>
+    function AppViewModel() {
+        var self = this;
+        self.twitterName = ko.observable('@example');
+        self.resultData = ko.observable(); // No initial value
+    
+        self.getTweets = function() {
+            var name = self.twitterName(),
+                simulatedResults = [
+                    { text: name + ' What a nice day.' },
+                    { text: name + ' Building some cool apps.' },
+                    { text: name + ' Just saw a famous celebrity eating lard. Yum.' }
+                ];
+    
+            self.resultData({ retrievalDate: new Date(), topTweets: simulatedResults });
+        }
+    
+        self.clearResults = function() {
+            self.resultData(undefined);
+        }
+    }
+    
+    ko.applyBindings(new AppViewModel());
+    </script>
+该例子中将使用with绑定动态添加和删除其绑定值为null/undefined或非null/undefined
+
+#### with无容器绑定
+像if、foreach等的虚拟绑定一样，with绑定也一样。使用<!-- ko -->和<!-- /ko -->进行。  
+
+    <ul>
+        <li>Header Element</li>
+        <!-- ko with: outboundFlight -->
+            ...
+        <!-- /ko -->
+        <!-- ko with: inboundFlight -->
+            ...
+        <!-- /ko -->
+    </ul>
+
+
+### component绑定
+例子:  
+
+    <h4>First instance, without parameters</h4>
+    <div data-bind='component: "message-editor"'></div>
+    
+    <h4>Second instance, passing parameters</h4>
+    <div data-bind='component: {
+        name: "message-editor",
+        params: { initialText: "Hello, world!" }
+    }'></div>
+
+    <script>
+    ko.components.register('message-editor', {
+        viewModel: function(params) {
+            this.text = ko.observable(params && params.initialText || '');
+        },
+        template: 'Message: <input data-bind="value: text" /> '
+                + '(length: <span data-bind="text: text().length"></span>)'
+    });
+    
+    ko.applyBindings();
+    </script>
+这只是一个非常简单的例子，在开发中，一般都是将View Model和Template写成单独外部文件，然后通过ko的components.register方法注册他们，在以后的KO高级应用系列中将会进一步讲解。
+
+API  
+1. 快速语法：  
+只传递一个字符串作为组件名称，不用任何参数
+
+        <div data-bind='component: "my-component"'></div>
+如果觉得死板，可以传递一个监控属性，用其值作为组件名称。待以后组件名变化的时候，直接修改监控属性值即可。
+
+    <div data-bind="component: observableWhoseValueIsAComponentName"></div>
+
+2. 完整语法
+提供完整的组件参数，参数如下：
+* name - 注入组件的名称。可使用字符串或是监控属性
+* params - 一组参数对象。通常，这是一个包含多个参数的键值对
+
+        <div data-bind="component: {
+            name: "shopping-cart",
+            params: { mode: "detail-list", items: productsList}
+        }"></div>
+
+备注1  
+仅模板式的component  
+通常的component绑定具有ViewModel和Template,但是这并不是必须的有些时候一个component可能只包含一个Template
+
+    ko.components.register('special-offer', {
+        template: '<div class="offer-box" data-bind="text: productName"></div>'
+    })
+
+可以使用注入的方式，将视图模型注入给Template:
+
+    <div data-bind='component: {
+        name: "special-offer-callout",
+        params: { productName: someProduct,name}
+    }'></div>
+或者使用客户元素（高级章节使用）进行注入视图模型
+
+    <special-offer params='productName: someProduct.name'></special-offer>
+备注2  
+component虚拟绑定  
+如同之前章节的虚拟绑定一样，同样是使用<!-- ko -->和<!-- /ko -->这种方式实现虚拟绑定，来达到不更改DOM元素的目的
+
+    <!-- ko component: "message.editor" -->
+    <!-- /ko -->
+传参
+
+    <!-- ko component: {
+        name: "message-editor",
+        params: { initalText: "hello world!", otherPara: 123 }
+    } -->
+
+备注3  
+传递标记到component绑定  
+
+    <div data-bind="component: {
+        name: 'my-special-list',
+        params: { items:someArrayOfPeople }
+    }">
+    The person <em data-bind="text: name"></em>
+    is <em data-bind="text: age"></em>years old
+    </div>
+如上例子中，既有component绑定，也有一些DOM元素，当绑定后，my-special-list组件将会和这些DOM元素组成一个新的UI界面。
+
+
+### click 绑定
+例子：  
+
+    <div>
+        you have clicked<span data-bind="text: numberOfClicks"></span>Times
+        <button data-bind="click: incrementClickCounter">click me</button>
+    </div>
+
+    <script type="text/javascript">
+        var viewModel = {
+            numberOfClicks : ko.observable(0),
+            incrementClickCounter : function() {
+                var previousCount = this.numberOfClicks();
+                this.numberOfClicks(previousCount + 1);
+            }
+        };
+    </script>
+
+备注1:  
+传递一个参数  
+
+    <ul data-bind="foreach: places">
+        <li>
+            <span data-bind="text: $data"></span>
+            <button data-bind="click: $parent.removePlace">Remove</button>
+        </li>
+    </ul>
+    
+    <script type="text/javascript">
+        function MyViewModel() {
+            var self = this;
+            self.places = ko.observableArray(['London', 'Paris', 'Tokyo']);
+    
+            // The current item will be passed as the first parameter, so we know which place to remove
+            self.removePlace = function(place) {
+                self.places.remove(place)
+            }
+        }
+        ko.applyBindings(new MyViewModel());
+    </script>
+当点击remove时只会删除当前的项目，从源码上看，说明传递的是当前项目。这种在渲染集合数据的时候特别有用。  
+需要注意两点：  
+
+* <span style="color: #ff4400">如果你是一个嵌套在绑定上下文，例如，如果使用foreach或with绑定，但你的处理函数是根视图模型或其他一些父模型，你需要使用一个前缀，如$parent或$root定位处理函数。  </span>
+* <span style="color: #ff4400">在您的视图模型，但是这是可以使用self（或其他一些变量）作为this的一个别名。</span>
+
+备注2  
+传递事件对象（多参数）  
+
+    <button data-bind="click: myFunction">
+        Click me
+    </button>
+    
+    <script type="text/javascript">
+        var viewModel = {
+            myFunction: function(data, event) {
+                if (event.shiftKey) {
+                    //do something different when user has shift key down
+                } else {
+                    //do normal action
+                }
+            }
+        };
+        ko.applyBindings(viewModel);
+    </script>

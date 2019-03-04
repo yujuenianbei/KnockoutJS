@@ -98,4 +98,69 @@ require(["Vue", "ko"], function (Vue, ko) {
         }
     }
     ko.applyBindings(new sample7(), document.getElementById("sample7"));
+
+    // sample19 with1
+    var sample19 = {
+        city: "London",
+        coords:{
+            latitude:  51.5001524,
+            longitude: -0.1262362
+        }
+    }
+    ko.applyBindings(sample19, document.getElementById('sample19'))
+
+    // sample20 with2
+    function sample20() {
+        var self = this;
+        self.twitterName = ko.observable("@example");
+        self.resultData = ko.observable();
+        self.getTweets = function() {
+            var name = self.twitterName();
+            simulatedResults = [
+                { text: name + 'what a nice day.'},
+                { text: name + 'Building some cool apps.'},
+                { text: name + 'Just saw a famous celebrity eating lard. Yum.'}
+            ]
+            self.resultData({retrievalDate: new Date(), topTweets: simulatedResults})
+        }
+        self.cleanResults = function() {
+            // 这里的this指向的是resultData　由html决定this 指向
+            console.log(this);
+            self.resultData(undefined)
+        }
+    }
+    ko.applyBindings(new sample20(), document.getElementById('sample20'))
+
+    // sample20 component
+    ko.components.register('message-editor', {
+        viewModel: function(params) {
+            this.text = ko.observable(params && params.initialText || '');
+        },
+        template: 'Message: <input data-bind="value: text" /> '
+                + '(length: <span data-bind="text: text().length"></span>)'
+    });
+    ko.applyBindings(null, document.getElementById('sample21'));
+
+    // sample22 click
+    var sample22 = {
+        numberOfClicks : ko.observable(0),
+        incrementClickCounter : function() {
+            var previousCount = this.numberOfClicks();
+            this.numberOfClicks(previousCount + 1);
+        }
+    };
+    ko.applyBindings(sample22, document.getElementById('sample22'));
+    // samle23 click params
+    var samle23 = {
+        myFunction: function(data, event) {
+            if (event.shiftKey) {
+                console.log(1,event);
+                //do something different when user has shift key down
+            } else {
+                //do normal action
+                console.log(2,event);
+            }
+        }
+    };
+    ko.applyBindings(samle23,document.getElementById("sample23"));
 });
