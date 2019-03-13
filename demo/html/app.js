@@ -1,12 +1,14 @@
 requirejs.config({
     baseUrl: 'js',
     paths: {
+        "jqurey": "jquery.min",
         "Vue": "vue.min",
         "ko": "knockout-min"
     },
 });
 
-require(["Vue", "ko"], function (Vue, ko) {
+require(["jqurey", "Vue", "ko"], function ($, Vue, ko) {
+    alert($)
     var app = new Vue({
         el: "#app",
         data: {

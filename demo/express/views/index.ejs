@@ -69,13 +69,27 @@
     </table>
   </div>
   <!-- sample7 -->
-  <h3>添加、删除项目</h3>
+  <h3>添加、删除项]</h3>
   <div id="sample7">
     <ul data-bind="foreach: persons">
       <li>
         Name at position<span data-bind="text: $index"></span>
         <span data-bind="text: name"></span>
         <a href="#" data-bind="click: $parent.removePerson">remove</a>
+      </li>
+    </ul>
+    <button data-bind="click: addPerson">add</button>
+  </div>
+
+  <h3>sample8</h3>
+  <div id="sample8">
+    <ul data-bind="foreach: persons">
+      <li>
+        <input type="radio" name="123" checked="">
+        <b data-bind="click: $parent.removePerson">
+          Name at position<span data-bind="text: $index"></span>
+          <span data-bind="text: name"></span>
+        </b>
       </li>
     </ul>
     <button data-bind="click: addPerson">add</button>
@@ -122,21 +136,37 @@
   <!-- sample22 click1-->
   <h3>click 1</h3>
   <div id="sample22">
-      you have clicked <span data-bind="text: numberOfClicks"></span> Times
-      <button data-bind="click: incrementClickCounter">click me</button>
+    you have clicked <span data-bind="text: numberOfClicks"></span> Times
+    <button data-bind="click: incrementClickCounter">click me</button>
   </div>
 
   <!-- sample23 -->
   <h3>click param(s)</h3>
   <div id="sample23">
-      <button data-bind="click: myFunction">
-          Click me
-      </button>
+    <button data-bind="click: myFunction">
+      Click me
+    </button>
 
-      <button data-bind="click: function(data, event) { myFunction('param1', 'param2', data, event) }">
-          Click me
-      </button>
+    <button data-bind="click: function(data, event) { myFunction('param1', 'param2', data, event) }">
+      Click me
+    </button>
+  </div>
+  <h3>sample24</h3>
+  <div id="sample24">
+    <p>Send me spam: <input type="checkbox" data-bind="checked: wantsSpam" /></p>
+    <div data-bind="foreach: data">
+        <div data-bind="click: $parent.clicker">
+          <input type="radio" name="flavorGroup" data-bind="value: value, checked: $parent.spamFlavor" />
+          <span data-bind="text: name"></span> 
+        </div>
+    </div>
+  </div>
+  <h3>click ajax</h3>
+  <div id="sample25">
+    <p data-bind="visible: dataCheck">Send me spam: <input type="text" data-bind='value: inputdata'/></p>
+    <p data-bind="text: coding,visible: codingvis"></p>
+    <p data-bind="text: info,visible: codingvis"></p>
+    <button data-bind="text: spamFlavor,click: clicking"></button>
   </div>
 </body>
-
 </html>

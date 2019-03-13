@@ -649,3 +649,263 @@ component虚拟绑定
         };
         ko.applyBindings(viewModel);
     </script>
+
+如果要传递更多的参数，可以时用函数文本的方式
+
+    <button data-bind="click: function(data, event) {myFunction('param1', 'param2', 'param3', data, event)}">
+        Click me
+    </button>
+还有更优雅的写法（优雅个毛线），使用bind函数绑定多个参数
+
+    <button data-bind="click: myFunction.bind($data, 'param1', 'param2')">
+        Click me
+    </button>
+
+备注3  
+允许默认点击动作
+默认情况下，Ko会阻止任何默认动作。比如你把click绑定到一个a标签上，当点击时，浏览器会调用click绑定的回调函数。但是不会执行href的连接跳转。
+
+如果你不希望这种默认的阻止动作。可以在回调函数中返回true。
+
+备注4  
+防止冒泡事件  
+默认情况下，KO允许click绑定继续到任何高级别的事件处理。例如，父元素和子元素都有click绑定，那么这两个元素的click绑定会都被触发。
+可以使用一个附加绑定clickBubble来解决该问题：
+
+    <div data-bind="click: myDivHandler">
+        <button data-bind="click: myButtonHandler, clickBubble: false">
+            Click me
+        </button>
+    </div>
+如上述例子，myButtonHandler将被调用，而附件绑定clickBubble，并设置了false，这至使父元素的myDivHandler不会被调用。
+
+备注5：  
+与Jquery互动  
+如果存在Jquery的click事件，KO将会去调用Jquery的click事件，如果你想总是使用自己本地的事件来处理，可以在ko.applyBindings中加入如下代码：
+
+    ko.options.useOnlyNativeEvents = true;
+
+### event绑定
+event绑定即为事件绑定，即当触发相关DOM事件的时候回调函数。例如keypress，mouseover或者mouseout等  
+
+    <div>
+        <div data-bind="event: { mouseover: enableDetails, mouseout: disableDetails }">
+            Mouse over me
+        </div>
+        <div data-bind="visible: detailsEnabled">
+            Details
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+        var viewModel = {
+            detailsEnabled: ko.observable(false),
+            enableDetails: function() {
+                this.detailsEnabled(true);
+            },
+            disableDetails: function() {
+                this.detailsEnabled(false);
+            }
+        };
+        ko.applyBindings(viewModel);
+    </script>
+
+如上述例子，当鼠标指针移入或者移出Mouse over me时，对于detailsEnabled的值设定true或者false。进而控制Details的显示和隐藏。  
+和click一样，event后边所跟的格式一般为：event { mouseover: someObject.someFunction }，其中的回调函数并不一定非要是视图模型的函数，他可以时任何对象的函数。
+
+备注1：  
+传递一个当前项目作为参数
+    <ul data-bind="foreach: places">
+        <li data-bind="text: $data, event: { mouseover: $parent.logMouseOver }"> </li>
+    </ul>
+    <p>You seem to be interested in: <span data-bind="text: lastInterest"> </span></p>
+    
+    <script type="text/javascript">
+        function MyViewModel() {
+            var self = this;
+            self.lastInterest = ko.observable();
+            self.places = ko.observableArray(['London', 'Paris', 'Tokyo']);
+    
+            // The current item will be passed as the first parameter, so we know which place was hovered over
+            self.logMouseOver = function(place) {
+                self.lastInterest(place);
+            }
+        }
+        ko.applyBindings(new MyViewModel());
+    </script>
+需要注意，如果你使用的是嵌套绑定上下文，比如foreach或者with，而需要处理的回调函数在视图模型中或者在父模型中，需要使用$parent或者$root前缀来进行绑定
+
+与click绑定一样，给this取个别名比较好。
+
+备注2：  
+传递多个参数  
+
+    <div data-bind="event: { mouseover: myFunction }">
+        Mouse over me
+    </div>
+    
+    <script type="text/javascript">
+        var viewModel = {
+            myFunction: function(data, event) {
+                if (event.shiftKey) {
+                    //do something different when user has shift key down
+                } else {
+                    //do normal action
+                }
+            }
+        };
+        ko.applyBindings(viewModel);
+    </script>
+封装多参数示例：
+
+    <div data-bind="event: { mouseover: function(data, event) { myFunction('param1', 'param2', data, event) } }">
+        Mouse over me
+    </div>
+
+使用bind函数示例：  
+
+    <button data-bind="event: { mouseover: myFunction.bind($data, 'param1', 'param2') }">
+        Click me
+    </button>
+
+备注3：  
+允许默认动作  
+同click绑定一样，ko禁止默认动作，比如你将event的keypress事件绑定到一个Input元素上，那这个input元素输入的值将会被keypress回调占用而无法输入任何信息。解决方案很简单，就是在回调函数中返回true即可。
+
+备注4：  
+防止冒泡事件  
+如果要防止冒泡事件，可以直接在事件绑定后附加一个youreventBubble绑定。将该附加绑定设置为false则禁止冒泡事件的发生，例如：
+
+    <div data-bind="event: { mouseover: myDivHandler }">
+        <button data-bind="event: { mouseover: myButtonHandler }, mouseoverBubble: false">
+            Click me
+        </button>
+    </div>
+
+### submit绑定目的
+submit绑定即为提交绑定，通常用于form元素。这种绑定方式会打断默认的提交至服务器的操作。转而提交到你设定好的提交绑定回调函数中。如果要打破这个默认规则，只需要在回调函数中返回true即可。  
+
+    <form data-bind="submit: doSomething">
+        ... form contents go here ...
+        <button type="submit">Submit</button>
+    </form>
+    
+    <script type="text/javascript">
+        var viewModel = {
+            doSomething : function(formElement) {
+                // ... now do something
+            }
+        };
+    </script>
+在回调函数中，你可以做很多事情，比如前端数据验证if ($(formElement).valid()) { /* do something */ }。等等
+
+### enable绑定目的  disable
+enable绑定主要用于DOM元素的启用禁用状态，通常用于input,select或者textarea。  
+
+    <p>
+        <input type='checkbox' data-bind="checked: hasCellphone" />
+        I have a cellphone
+    </p>
+    <p>
+        Your cellphone number:
+        <input type='text' data-bind="value: cellphoneNumber, enable: hasCellphone" />
+    </p>
+    
+    <script type="text/javascript">
+        var viewModel = {
+            hasCellphone : ko.observable(false),
+            cellphoneNumber: ""
+        };
+    </script>
+
+
+    <!-- 获取form数据 -->
+    <form data-bind="submit:showValue">
+        <input type="text" value="123" name="test"/>
+        <input type="submit" value="submit"/>
+    </form>
+
+    showValue:function (formdata) {
+        alert(formdata.test.value);
+    }
+
+### value绑定
+value绑定主要用于DOM元素给视图模型赋值用的。通常用于( input select textarea )等元素。
+
+value绑定与text绑定的区别在于，value绑定中当用户编辑表单控件相关值的时候，值会自动更新视图模型的相关属性值，当视图模型的相关属性值被更新后，表单中相关的value绑定也会随之变化。
+
+value绑定就像DOM和ViewModel的一个双向通道。而text绑定只是ViewModel到DOM的单向通道。
+
+    <p>Login name: <input data-bind="value: userName" /></p>
+    <p>Password: <input type="password" data-bind="value: userPassword" /></p>
+    
+    <script type="text/javascript">
+        var viewModel = {
+            userName: ko.observable(""),        // Initially blank
+            userPassword: ko.observable("abc"), // Prepopulate
+        };
+    </script>
+
+主要技术细节：
+
+1. KO将会使用初始值设置value绑定的元素。当有新的值的时候，初始值将被覆盖  
+2. 如果value绑定的是监控属性，那么之后的属性值更新就会被体现在DOM的value绑定上，如果不是监控属性，则只有第一次运行会更新DOM上的value绑定的值，之后就不会再变了。  
+3. 如果你的value绑定不是数值型或字符型数据(例如一个对象或数组)，那显示的文本内容将等同于yourParameter.toString()。最好还是绑定值型或字符型数据。
+4. 当用户编辑表单控件修改基于value绑定的元素值并移出焦点后，KO就会自动更新对应的视图模型的属性值，你也可以通过使用valueUpdate事件来控制。
+
+其他技术细节：
+
+1. valueUpdate，KO定义了一系列的change事件，最常用包括如下事件：
+* "input"-input或textarea元素的变化更新您的视图模型时的值。
+* "keyup" - 当用户释放某个键更新您的视图模型
+* "keypress"-当用户输入一个值更新您的视图模型。不像keyup，这个会反复更新
+* "afterkeydown"-当用户开始输入一个字符尽快更新您的视图模型。这通过捕获浏览器的keydown事件，并异步处理该事件。这个事件在一些移动客户端可能不会起什么作用。
+2. valueAllowUnset，适用于select的value绑定，其他元素不起作用，具体请参考之后的备注2.
+
+备注1：实时更新
+如果你想要实时更新input或者textarea到你的视图模型，可以使用textInput绑定。具体的textInput细节将在之后的章节提到。
+
+备注2：下拉列表select的绑定
+KO在下拉列表绑定中，需要使用value绑定和options绑定(options绑定将在以后的章节中提到)。  
+使用valueAllowUnset与select元素  
+
+    <p>
+        Select a country:
+        <select data-bind="options: countries,
+                        optionsCaption: 'Choose one...',
+                        value: selectedCountry,
+                        valueAllowUnset: true"></select>
+    </p>
+    
+    <script type="text/javascript">
+        var viewModel = {
+            countries: ['Japan', 'Bolivia', 'New Zealand'],
+            selectedCountry: ko.observable('Latvia')
+        };
+    </script>
+
+有很多时候，我们希望下拉列表中包含一个空白的或者没有包含在数据集合中的元素，比如choose one…，那么就可以使用valueAllowUnset:true来带到目的。如上述例子一样。
+
+selectedCountry将保留Latvia，并将下拉列表中空白匹配给它。
+
+备注3：绑定监控属性和非监控属性  
+如果你使用value绑定的是一个监控属性，KO是能够建立一个双向绑定。
+
+但是如果value绑定是一个非监控属性，则KO会进行以下处理：
+
+如果引用一个简单的属性，也就是说，它只是在你的视图模型一个普通的属性，表单元素编辑时KO将设置表单元素的初始状态属性值。
+
+    <p>First value: <input data-bind="value: firstValue"></p>
+    <p>First value:<span data-bind="text:firstValue"></span></p>
+    <!-- One-way binding. Populates textbox; syncs only from textbox to model. -->
+    <p>Second value: <input data-bind="value: secondValue"></p>
+    <p>Second value: <span data-bind="text: secondValue"></span></p>
+    <!-- No binding. Populates textbox, but doesn't react to any changes. -->
+    <p>Third value: <input data-bind="value: secondValue.length &gt; 8"></p>
+    <script type="text/javascript">
+        var viewModel = {
+            firstValue: ko.observable("hello"), // Observable
+            secondValue: "hello, again"         // Not observable
+        };
+        ko.applybindings(viewModel,document.getElementById("eq2"));
+    </script>
