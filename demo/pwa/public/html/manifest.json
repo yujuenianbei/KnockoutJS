@@ -1,0 +1,21 @@
+{
+    "short_name": "蝉知资源站",
+    "name": "蝉知资源站",
+    "icons": [
+      {
+        "src": "/images/test.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/images/test.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#2196F3",
+    "orientation": "landscape",
+    "theme_color": "#2196F3"
+  }

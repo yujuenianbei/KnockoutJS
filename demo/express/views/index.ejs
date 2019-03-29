@@ -4,10 +4,11 @@
 <head>
   <title><%= title %></title>
   <link rel='stylesheet' href='/css/style.css' />
-  <script data-main="/js/app" src="/js/lib/require.min.js"></script>
+  <script data-main="/static/js/main.min" src="/static/js/lib/require.min.js"></script>
 </head>
 
 <body>
+  <a href="/test">test</a>
   <h3>require使用方法</h3>
   <div id="app">
     {{message}}
@@ -164,9 +165,20 @@
   <h3>click ajax</h3>
   <div id="sample25">
     <p data-bind="visible: dataCheck">Send me spam: <input type="text" data-bind='value: inputdata'/></p>
-    <p data-bind="text: coding,visible: codingvis"></p>
+    <p data-bind="text: coding,visible: !codingvis"></p>
     <p data-bind="text: info,visible: codingvis"></p>
     <button data-bind="text: spamFlavor,click: clicking"></button>
+    <input type="text" class="testinput" data-bind="value: checko, event: { keypress: keypressdown}">
   </div>
+  <input type="radio" name="payment[method]"/>
+  <input type="radio" name="payment[method]"/>
+  <input type="radio" name="payment[method]"/>
+  <input type="radio" name="g" />
+  <input type="radio" name="g" />
+  <input type="radio" name="g" />
+  <input type="radio" name="payment[method]"/>
+  <input type="radio" name="payment[method]"/>
+  <input type="radio" name="payment[method]"/>
+
 </body>
 </html>

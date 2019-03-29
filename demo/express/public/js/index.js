@@ -14,6 +14,20 @@ require(["jquery", "Vue", "ko"], function ($, Vue, ko) {
             message: 'Hello Vue!'
         }
     });
+$(function(){
+    setInterval(function(){
+        if(!$("input[name='payment[method]']").prop("checked")) {
+            $("input[name='payment[method]']").prop("required", true); 
+            $("input[name='g']").prop("required", true);  
+        }
+        }, 500
+    );
+})
+
+    $("input[name='payment[method]']").click(function(){
+        // $("input[name='g']").prop("checked",false )
+        $("input[name='g']").prop("required", false);
+    })
     // sample1
     // 激活绑定关系
     var myViewModel1 = {
@@ -211,32 +225,40 @@ require(["jquery", "Vue", "ko"], function ($, Vue, ko) {
         info: ko.observable(''),
         dataCheck: ko.observable(true),
         codingvis: ko.observable(false),
+        checko: ko.observable('123123213'),
         spamFlavor: ko.observable("check"), // Initially selects only the Almond radio button
+        keypressdown: function (data, event) {
+            if (event.keyCode == 13){
+                console.log(111)
+            };
+            return true;
+        },
         clicking: function () {
-            if(sample25.inputdata().length !== 5) {
+            var _this = this
+            if(_this.inputdata().length !== 5) {
                 alert("Please enter a valid pincode");
                 return false;
             }
-            if (sample25.spamFlavor() === 'check') {
+            if (_this.spamFlavor() === 'check') {
                 console.log(sample25.inputdata())
-                sample25.spamFlavor("checking");
-                sample25.dataCheck(false)
-                $.post('http://localhost:3000/api/getcode', { pingcode: sample25.inputdata() }, function (result) {
-                    sample25.spamFlavor("checked")
-                    sample25.coding(sample25.inputdata());
-                    sample25.codingvis(true);
+                _this.spamFlavor("checking");
+                _this.dataCheck(false)
+                $.post('http://localhost:3000/api/getcode', { pingcode: _this.inputdata() }, function (result) {
+                    _this.spamFlavor("checked")
+                    _this.coding(_this.inputdata());
+                    _this.codingvis(true);
                     if(result.success === 0) {
-                        sample25.info(result.message);
+                        _this.info(result.message);
                     } else {
-                        sample25.info(result.days); 
+                        _this.info(result.days); 
                     }
                 })
-            } else if (sample25.spamFlavor() === 'checked') {
-                sample25.spamFlavor("check");
-                sample25.dataCheck(true);
-                sample25.codingvis(false);
-                sample25.coding('');
-                sample25.inputdata('');
+            } else if (_this.spamFlavor() === 'checked') {
+                _this.spamFlavor("check");
+                _this.dataCheck(true);
+                _this.codingvis(false);
+                _this.coding('');
+                _this.inputdata('');
             }
         },
     };

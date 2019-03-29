@@ -1,0 +1,13 @@
+
+main.min.js
+----------------
+lib/jquery.min.js
+lib/vue.min.js
+lib/knockout-min.js
+index.js
+
+test.min.js
+----------------
+lib/jquery.min.js
+lib/vue.min.js
+test.js

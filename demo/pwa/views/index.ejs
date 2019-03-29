@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" name="viewport">
+    <title>Service Worker Sample: Offline Page Not Dependent On Install</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css">
+    <script type="text/javascript" src="/js/main.js"></script>
+    <script>
+      function service_worker_register() {
+        if(navigator.serviceWorker != null) {
+          navigator.serviceWorker.register('/js/service-worker.js')
+            .then(function(r) {
+              console.log('service worker has registered success!');
+            })
+            .catch(function(whut) {
+              console.log('service worker has registered failure!');
+            });
+        }
+      }
+    </script>
+  </head>
+  <!-- 在页面laod结束后去尝试注册Service Worker，以减小对页面首屏的影响 -->
+  <body onload="service_worker_register()">
+    <h2>Service Worker Sample: Offline Page Not Dependent On Install</h2>
+    <h3>1.image</h3>
+    <img src="images/banner.png"></img>
+    <h3>2.external css</h3>
+    <img id="image"></img>
+    <h3>3.external js</h3>
+    <button onclick="button_click()">Click Me!</button>
+  </body>
+</html>
